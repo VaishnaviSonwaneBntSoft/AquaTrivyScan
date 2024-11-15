@@ -11,8 +11,6 @@ on:
   pull_request:
     # The branches below must be a subset of the branches above
     branches: [ "master" ]
-  schedule:
-    - cron: '45 23 * * 1'
 
 permissions:
   contents: read
@@ -31,12 +29,12 @@ jobs:
 
       - name: Build an image from Dockerfile
         run: |
-          docker build -t my-app:latest .
+          docker build -t app:latest .
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@7b7aa264d83dc58691451798b4d117d53d21edfe
         with:
-          image-ref: 'my-app:latest'
+          image-ref: 'app:latest'
           format: 'template'
           template: '@/contrib/sarif.tpl'
           output: 'trivy-results.sarif'
