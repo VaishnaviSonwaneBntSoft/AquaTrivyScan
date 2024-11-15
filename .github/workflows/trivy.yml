@@ -27,6 +27,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Make Gradlew executable
+        run: chmod +x ./gradlew
+
       - name: Build with Gradle
         run: ./gradlew build
 
