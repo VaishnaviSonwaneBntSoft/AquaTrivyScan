@@ -25,7 +25,7 @@ jobs:
         uses: gradle/wrapper-validation-action@v1
 
       - name: Make gradlew executable
-        run: chmod +x AquaTrivyScan/gradle
+        run: chmod +x gradlew
 
       - name: Build the JAR file
         run: ./gradlew build
