@@ -46,14 +46,35 @@ jobs:
       - name: Push the Docker Image to GitHub Container Registry
         run: docker push ghcr.io/vaishnavisonwanebntsoft/trivy_scanner:latest
 
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@7b7aa264d83dc58691451798b4d117d53d21edfe
+      - name: Install Trivy
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget apt-transport-https gnupg lsb-release
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+          echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update
+          sudo apt-get install -y trivy
+
+      - name: Check if Trivy is installed
+        run: |
+          which trivy || echo "Trivy is not installed"
+          trivy --version || echo "Trivy version not found"
+
+      - name: Cache Trivy DB
+        uses: actions/cache@v3
         with:
-          image-ref: 'app:latest'
-          format: 'template'
-          template: '@/contrib/sarif.tpl'
-          output: 'trivy-results.sarif'
-          severity: 'CRITICAL,HIGH'
+          path: ~/.cache/trivy
+          key: trivy-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            trivy-${{ runner.os }}-
+
+      - name: Scan Docker image with Trivy and generate SARIF
+        run: |
+          trivy image \
+            --format sarif \
+            --output trivy-results.sarif \
+            --severity HIGH,CRITICAL \
+            ghcr.io/${{ github.repository_owner }}/gitactiondemo:latest
 
       # Compress the SARIF report into a ZIP file
       - name: Compress Trivy scan results into a ZIP file
