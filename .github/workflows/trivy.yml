@@ -10,9 +10,7 @@ on:
     branches: [ "master", "main" ]
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: [ "master" ]
-  schedule:
-    - cron: '45 23 * * 1'
+    branches: [ "feature" ]
 
 permissions:
   contents: read
@@ -29,14 +27,31 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Set up Java 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: 21
+
+      - name: Make Gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew build
+
       - name: Build an image from Dockerfile
-        run: |
-          docker build -t docker.io/my-organization/my-app:${{ github.sha }} .
+        run: docker build . -t vaishnavisonwanebnt/trivy_scanner
+
+      - name: Log in to DockerHub
+        run: echo "${{secrets.DOCKERHUB_PASSWORD}}" | docker login -u ${{secrets.DOCKERHUB_USERNAME}} --password-stdin
+
+      - name: Push the Docker image to DockerHub
+        run: docker push vaishnavisonwanebnt/trivy_scanner:latest
+
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@7b7aa264d83dc58691451798b4d117d53d21edfe
         with:
-          image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
+          image-ref: 'app:latest'
           format: 'template'
           template: '@/contrib/sarif.tpl'
           output: 'trivy-results.sarif'
