@@ -76,16 +76,12 @@ jobs:
             --severity HIGH,CRITICAL \
             ghcr.io/vaishnavisonwanebntsoft/trivy_scanner:latest
 
-      # Compress the SARIF report into a ZIP file
-      - name: Compress Trivy scan results into a ZIP file
-        run: zip trivy-results.zip trivy-results.sarif
-
       # Upload the compressed ZIP file to GitHub Packages using the GitHub API
       - name: Upload Trivy results as an artifact
         uses: actions/upload-artifact@v3
         with:
           name: trivy-results
-          path: trivy-results.zip
+          path: trivy-results.sarif
 
 #      - name: Upload to GitHub Packages
 #        run: |
