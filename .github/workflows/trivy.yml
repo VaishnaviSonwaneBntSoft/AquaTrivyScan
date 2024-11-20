@@ -74,7 +74,7 @@ jobs:
             --format sarif \
             --output trivy-results.sarif \
             --severity HIGH,CRITICAL \
-            ghcr.io/$vaishnavisonwanebntsoft/trivy_scanner:latest
+            ghcr.io/vaishnavisonwanebntsoft/trivy_scanner:latest
 
       # Compress the SARIF report into a ZIP file
       - name: Compress Trivy scan results into a ZIP file
