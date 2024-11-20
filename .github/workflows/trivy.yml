@@ -81,9 +81,15 @@ jobs:
         run: zip trivy-results.zip trivy-results.sarif
 
       # Upload the compressed ZIP file to GitHub Packages using the GitHub API
-      - name: Upload to GitHub Packages
-        run: |
-          curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-          -F "file=@trivy-results.zip" \
-          "https://uploads.github.com/repos/${{ github.repository }}/packages/containers/container/trivy-results/versions/latest"
+      - name: Upload Trivy results as an artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: trivy-results
+          path: trivy-results.zip
 
+#      - name: Upload to GitHub Packages
+#        run: |
+#          curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+#          -F "file=@trivy-results.zip" \
+#          "https://uploads.github.com/repos/${{ github.repository }}/packages/containers/container/trivy-results/versions/latest"
+#
