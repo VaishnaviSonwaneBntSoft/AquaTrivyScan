@@ -84,6 +84,6 @@ jobs:
       - name: Upload to GitHub Packages
         run: |
           curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Content-Type: application/zip" \
-            --data-binary @trivy-results.zip \
-            "https://uploads.github.com/repos/${{ github.repository }}/packages/containers/container/trivy-results/versions/latest"
+          -F "file=@trivy-results.zip" \
+          "https://uploads.github.com/repos/${{ github.repository }}/packages/containers/container/trivy-results/versions/latest"
+
